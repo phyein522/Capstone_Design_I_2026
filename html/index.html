@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Mark-It</title>
+	<link rel="stylesheet" href="../css/bootstrap.css" />
+	<link rel="stylesheet" href="../css/main.css" />
+	<link rel="stylesheet" href="../css/index.css" />
+	<link rel="icon" type="image/x-icon" href="../img/icon.png">
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">Mark-It</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
+				aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarColor01">
+				<ul class="navbar-nav me-auto">
+					<li class="nav-item">
+						<a class="nav-link active" href="#">Home
+							<span class="visually-hidden">(current)</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Features</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Pricing</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">About</a>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+							aria-haspopup="true" aria-expanded="false">Dropdown</a>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="#">Action</a>
+							<a class="dropdown-item" href="#">Another action</a>
+							<a class="dropdown-item" href="#">Something else here</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="#">Separated link</a>
+						</div>
+					</li>
+				</ul>
+				<form class="d-flex">
+					<input class="form-control me-sm-2" type="search" placeholder="Search">
+					<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+				</form>
+			</div>
+		</div>
+	</nav>
+	<main>
+		<section>
+			<div class="card border-primary m-3">
+				<div class="card-header">
+					<label for="formFile" class="form-label mt-2">이미지 파일 업로드</label>
+					<span class="badge rounded-pill btn-download" style="display: none;">
+						<a download="img" id="downloadBtn">
+							<button type="button" class="btn btn-outline-secondary">이미지 다운로드</button>
+						</a>
+					</span>
+				</div>
+				<div class="card-body">
+					<input class="form-control" type="file" id="formFile" accept="image/*" />
+				</div>
+				<div class="card m-3" style="display: none;" id="imgPreviewContainer">
+					<div class="card-body">
+						<img alt="업로드한 이미지" id="imgPreview" />
+					</div>
+				</div>
+			</div>
+		</section>
+		<section>
+			<div class="card text-white bg-primary m-3">
+				<div class="card-header">마스킹할 정보 선택</div>
+				<div class="card-body">
+					<fieldset>
+						<ul class="list-group" id="maskingList">
+							<li class="list-group-item d-flex justify-content-between align-items-center">
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+									<label class="form-check-label" for="flexCheckDefault">이름</label>
+								</div>
+								<span class="badge rounded-pill">
+									<button type="button" class="btn btn-outline-primary btn-rename">이름변경</button>
+									<button type="button" class="btn btn-outline-secondary btn-del">삭제</button>
+								</span>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center">
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" />
+									<label class="form-check-label" for="flexCheckChecked">얼굴</label>
+								</div>
+								<span class="badge rounded-pill">
+									<button type="button" class="btn btn-outline-primary btn-rename">이름변경</button>
+									<button type="button" class="btn btn-secondary disabled btn-del" disabled>삭제</button>
+								</span>
+							</li>
+							<li class="list-group-item d-flex justify-content-between align-items-center"
+								id="addWordContainer">
+								<div class="input-group">
+									<input type="text" class="form-control" placeholder="마스킹할 단어 추가"
+										aria-label="마스킹할 단어 추가" aria-describedby="addWordBtn" id="addWord">
+									<button class="btn btn-primary" type="button" id="addWordBtn">단어 추가</button>
+								</div>
+							</li>
+						</ul>
+					</fieldset>
+				</div>
+			</div>
+		</section>
+	</main>
+	<footer>
+		<div>
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th scope="col" colspan="4"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="table-dark">
+						<th scope="row">2024671000 유소윤</th>
+						<td>2024671019 남도훈</td>
+						<td>2024671027 박혜인</td>
+						<td>2024671055 임지현</td>
+					</tr>
+					<tr class="table-dark">
+						<td colspan="2">Castone_Design_I</td>
+						<td>2026</td>
+						<td>4조</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</footer>
+</body>
+
+</html>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/index.js"></script>
