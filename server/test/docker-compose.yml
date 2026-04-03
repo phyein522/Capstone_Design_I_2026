@@ -1,0 +1,11 @@
+services:
+  python:
+    build: ./python
+    container_name: "python"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./python:/work
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
