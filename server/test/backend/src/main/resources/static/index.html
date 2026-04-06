@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script src="jquery.min.js"></script>
+<script>
+    $(() => {
+        $.test = () => {
+            $.ajax({
+                url: "api/test"
+                , type: "POST"
+                , dataType: "json"
+                , data: JSON.stringify({"content":"test"})
+                , contentType: "application/json"
+            }).done(function(data, textStatus, jqXHR) {
+                console.log("성공:", data);
+                $.print(data.data.message);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.log("실패:", textStatus);
+            }).always(function() {
+                console.log("종료");
+            });
+        };
+
+        $.print = (data) => {
+            $("#txtTest").text(data);
+        };
+    });
+</script>
+<body>
+    <button id="btnTest" onclick="$.test()">test</button>
+    <p id="txtTest"></p>
+</body>
+</html>
