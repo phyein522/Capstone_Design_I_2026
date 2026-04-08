@@ -58,7 +58,7 @@ result = {<br>
 }<br>
 print(result)&nbsp;&nbsp;&nbsp;&nbsp;#결과가 요구하는 형태인지 확인
 	- 프론트엔드
-<img src="./md_img/요구사항 - 프론트엔드.png" />
+<img src="./md_resource/요구사항 - 프론트엔드.png" />
 	- 백엔드
 		1. 프론트엔드가 업로드한 이미지를 python에 전달
 		2. python이 응답한 JSON(좌표, type, content)을 프론트엔드에 전달
