@@ -20,7 +20,7 @@ https://github.com/JaidedAI/EasyOCR
 4주차
 - 주제 변경: (임시 프로젝트명)마스킷(mask-it)-얼굴인식 및 OCR을 이용한 개인정보 스캔 및 마스킹 웹
 - git hub repository 생성
-- Bootstrap css 디자인 결정 (Bootswatch - Minty, https://bootswatch.com/minty/)
+- Bootstrap css 디자인 의논 (Bootswatch - Minty, https://bootswatch.com/minty/)
 
 <br>
 
@@ -35,9 +35,10 @@ https://github.com/JaidedAI/EasyOCR
 <br>
 
 6주차
+- 프론트엔드 디자인 결정
 - 역할 별 요구사항
 	- python<br>
-result = {<br>
+result = [<br>
 &nbsp;&nbsp;&nbsp;&nbsp;{<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"x1":"시작x좌표"<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "y1":"시작y좌표"<br>
@@ -55,7 +56,7 @@ result = {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "content":"텍스트"&nbsp;&nbsp;&nbsp;&nbsp;#OCR이 인식한 텍스트의 내용을 담아야 하나, 현재는 임시로 "텍스트"라는 문자열을 담음<br>
 &nbsp;&nbsp;&nbsp;&nbsp;}<br>
 &nbsp;&nbsp;&nbsp;&nbsp;, ...<br>
-}<br>
+]<br>
 print(result)&nbsp;&nbsp;&nbsp;&nbsp;#결과가 요구하는 형태인지 확인
 	- 프론트엔드
 <img src="./md_resource/요구사항 - 프론트엔드.png" />
@@ -66,12 +67,15 @@ print(result)&nbsp;&nbsp;&nbsp;&nbsp;#결과가 요구하는 형태인지 확인
 
 <br>
 
-7주차
+8주차
+- 중간 결과 보고서 (최종 보고서 양식) (4/21(화) ~ 4/29(수))
 - 중간 결과 발표 준비
 
 <br>
 
-8주차
+9주차 (4/30(목))
 - 중간 결과 발표
+	- 지금까지 한 내용
+	- 향후 계획
 
 <hr>
