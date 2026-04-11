@@ -208,27 +208,31 @@
 
               <ul class="masking-list" id="maskingList">
 
-                <!-- 고정: 이름 (완전 수정 불가) -->
-                <li class="masking-item">
+                <!-- 고정 항목: 이름 -->
+                <li class="masking-item" data-fixed="true">
                   <div class="masking-item-left">
-                    <input class="aero-check" type="checkbox" id="checkName" value="name">
+                    <input class="aero-check" type="checkbox" id="checkName" value="name" checked>
                     <label class="masking-item-label" for="checkName">이름</label>
                   </div>
                   <div style="display:flex; gap:5px;">
-                    <button class="btn-aero btn-aero-ghost btn-sm-aero disabled" disabled>이름변경</button>
-                    <button class="btn-aero btn-aero-danger btn-sm-aero disabled" disabled>삭제</button>
+                    <button class="btn-aero btn-aero-ghost btn-sm-aero"
+                      onclick="renameItem(this)">이름변경</button>
+                    <button class="btn-aero btn-aero-danger btn-sm-aero"
+                      onclick="deleteItem(this)">삭제</button>
                   </div>
                 </li>
 
-                <!-- 고정: 얼굴 (완전 수정 불가) -->
-                <li class="masking-item">
+                <!-- 고정 항목: 얼굴 -->
+                <li class="masking-item" data-fixed="true">
                   <div class="masking-item-left">
                     <input class="aero-check" type="checkbox" id="checkFace" value="face" checked>
                     <label class="masking-item-label" for="checkFace">얼굴</label>
                   </div>
                   <div style="display:flex; gap:5px;">
-                    <button class="btn-aero btn-aero-ghost btn-sm-aero disabled" disabled>이름변경</button>
-                    <button class="btn-aero btn-aero-danger btn-sm-aero disabled" disabled>삭제</button>
+                    <button class="btn-aero btn-aero-ghost btn-sm-aero"
+                      onclick="renameItem(this)">이름변경</button>
+                    <button class="btn-aero btn-aero-danger btn-sm-aero"
+                      onclick="deleteItem(this)">삭제</button>
                   </div>
                 </li>
 
