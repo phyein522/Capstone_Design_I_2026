@@ -11,7 +11,6 @@ class PrivacyDetector:
         self.check_and_download_model()
         
         print("[System] 탐지 엔진 초기화 중 (CPU 모드)...")
-        # 어떤 컴퓨터에서도 돌아가도록 gpu=False로 설정했습니다.
         self.reader = easyocr.Reader(['ko', 'en'], gpu=False)
         self.face_net = cv2.dnn.readNetFromONNX(self.model_path)
         print("[System] 모든 준비가 완료되었습니다.")
