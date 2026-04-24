@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mark-It</title>
+
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- 스타일시트 -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =====================================================
+       네비게이션 바
+       ===================================================== -->
+  <nav class="navbar navbar-expand-lg" data-bs-theme="dark">
+    <div class="container-fluid" style="max-width:1100px; margin:0 auto;">
+
+      <a class="navbar-brand" href="#section-how">Mark-It</a>
+
+      <!-- 모바일 햄버거 버튼 -->
+      <button class="navbar-toggler" type="button"
+        data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#section-how">작동방식</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#section-features">기능</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#section-service">서비스</a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+
+
+  <!-- =====================================================
+       1)작동방식
+       ===================================================== -->
+  <section id="section-how">
+    <div class="section-container">
+
+      <!-- 상단 뱃지 + 제목 -->
+      <div class="hero-badge">Image Privacy Protection</div>
+
+      <h1 class="section-heading">
+        이미지 속 개인정보,<br>
+        <em>자동으로 지워드립니다</em>
+      </h1>
+
+      <p class="section-sub">
+        얼굴인식과 OCR 기술로 이미지 내 얼굴과 텍스트 개인정보를 감지하고,
+        좌표 기반으로 자동 마스킹 처리합니다.
+      </p>
+
+      <!-- 버튼 그룹 -->
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="#section-service">
+          <button class="btn-aero btn-aero-primary">지금 시작하기</button>
+        </a>
+        <a href="#section-features">
+          <button class="btn-aero btn-aero-ghost">기능 보기</button>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="aero-divider">
+
+
+  <!-- =====================================================
+       2)기능 소개
+       ===================================================== -->
+  <section id="section-features">
+    <div class="section-container">
+
+      <div class="eyebrow">// Features</div>
+      <h2 class="section-heading">Mark-It의 기능</h2>
+      <p class="section-sub">
+        내용은 추후 작성 예정입니다.
+      </p>
+
+      <!-- 2×2 빈 기능 카드 그리드 -->
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-card-num">기능 01</div>
+          <div class="feature-placeholder">내용 작성 예정</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-num">기능 02</div>
+          <div class="feature-placeholder">내용 작성 예정</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-num">기능 03</div>
+          <div class="feature-placeholder">내용 작성 예정</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-num">기능 04</div>
+          <div class="feature-placeholder">내용 작성 예정</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="aero-divider">
+
+
+  <!-- =====================================================
+       3)서비스
+       ===================================================== -->
+  <section id="section-service">
+    <div class="section-container">
+
+      <div class="eyebrow">// Service</div>
+      <h2 class="section-heading">마스킹 서비스</h2>
+      <p class="section-sub">
+        이미지를 업로드하고 마스킹할 항목을 선택하세요.
+      </p>
+
+      <!-- 2열 서비스 그리드 -->
+      <div class="service-grid">
+
+        <!-- ── 왼쪽: 이미지 업로드 + 미리보기 ── -->
+        <div class="aero-card">
+          <div class="aero-card-header">
+            <h6><div class="header-icon">🖼️</div> 이미지 업로드</h6>
+            <!-- 다운로드 버튼 - 처리 완료 후 표시 -->
+            <div class="download-area" id="downloadArea">
+              <a id="downloadBtn" download="masked_image">
+                <button class="btn-aero btn-aero-mint btn-sm-aero">⬇ 다운로드</button>
+              </a>
+            </div>
+          </div>
+
+          <div class="aero-card-body">
+
+            <!-- 파일 드롭존 -->
+            <div class="upload-zone" id="uploadZone">
+              <input type="file" id="formFile" accept="image/*"
+                onchange="handleFileSelect(this)">
+              <div class="upload-zone-icon">🌤️</div>
+              <h5 id="uploadTitle">이미지를 드래그하거나 클릭해서 업로드</h5>
+              <p id="uploadSubtitle">개인정보가 포함된 이미지를 업로드하세요</p>
+              <div class="fmt-tags">
+                <span class="fmt-tag">PNG</span>
+                <span class="fmt-tag">JPG</span>
+                <span class="fmt-tag">WEBP</span>
+                <span class="fmt-tag">BMP</span>
+              </div>
+            </div>
+
+            <!-- 원본 이미지: 항상 숨김 (요구사항) -->
+            <div id="imgPreviewContainer" style="display:none;">
+              <img id="imgPreview" alt="원본 이미지">
+            </div>
+
+            <!-- 마스킹 위치 확인 이미지: 처리 후 표시 -->
+            <div class="masked-preview-wrap" id="maskedPreviewWrap">
+              <div class="masked-preview-label">🛡️ 마스킹 위치 확인</div>
+              <img id="maskedPreview" alt="마스킹 확인 이미지">
+            </div>
+
+            <!-- 진행 바 -->
+            <div class="progress-wrap" id="progressWrap">
+              <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <div class="progress-label" id="progressLabel">처리 중...</div>
+            </div>
+
+            <!-- 마스킹 실행 버튼 -->
+            <button class="btn-aero btn-aero-primary btn-run"
+              id="runBtn" onclick="startMasking()" disabled>
+              🛡️ 마스킹 시작
+            </button>
+
+          </div>
+        </div>
+
+        <!-- ── 오른쪽: 옵션 + 결과 리스트 ── -->
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+          <!-- 마스킹 옵션 카드 -->
+          <div class="aero-card">
+            <div class="aero-card-header">
+              <h6><div class="header-icon">⚙️</div> 마스킹 항목 선택</h6>
+            </div>
+            <div class="aero-card-body">
+
+              <ul class="masking-list" id="maskingList">
+
+                <!-- 단어 추가 입력 -->
+                <li class="add-word-row" id="addWordContainer">
+                  <div style="display:flex; gap:8px;">
+                    <input class="aero-input" type="text" id="addWord"
+                      placeholder="마스킹할 단어 추가">
+                    <button class="btn-aero btn-aero-primary btn-sm-aero"
+                      id="addWordBtn" onclick="addMaskWord()"
+                      style="white-space:nowrap;">+ 추가</button>
+                  </div>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+
+          <!-- 마스킹 결과 카드 -->
+          <div class="aero-card">
+            <div class="aero-card-header">
+              <h6><div class="header-icon">✅</div> 감지 결과</h6>
+              <span id="resultCount"
+                style="font-size:11px; font-weight:700;
+                       background:rgba(120,200,240,0.18);
+                       color:var(--sky-dark);
+                       padding:3px 10px; border-radius:10px;">
+                0개
+              </span>
+            </div>
+            <div class="aero-card-body">
+
+              <div class="empty-state" id="resultEmpty">
+                <div class="empty-icon">🔍</div>
+                <p>마스킹 시작 후<br>결과가 표시됩니다</p>
+              </div>
+
+              <ul class="result-list" id="resultList" style="display:none;"></ul>
+
+            </div>
+          </div>
+
+        </div><!-- /오른쪽 컬럼 -->
+      </div><!-- /service-grid -->
+    </div>
+  </section>
+
+
+  <!-- =====================================================
+       푸터
+       ===================================================== -->
+  <footer>
+    <div class="footer-inner">
+
+      <!-- 로고 + 태그라인 -->
+      <div class="footer-logo">Mark-It</div>
+      <div class="footer-tagline">이미지 속 개인정보 자동 마스킹 서비스</div>
+
+      <hr class="footer-divider">
+
+      <!-- 팀 정보 -->
+      <div class="footer-team">
+
+        <!-- 팀원 이름/학번 -->
+        <div class="footer-members">
+          <div class="footer-member">
+            <div class="member-num">2024671019</div>
+            <div class="member-name">남도훈</div>
+          </div>
+          <div class="footer-member">
+            <div class="member-num">2024671027</div>
+            <div class="member-name">박혜인</div>
+          </div>
+          <div class="footer-member">
+            <div class="member-num">2024671055</div>
+            <div class="member-name">임지현</div>
+          </div>
+        </div>
+
+        <!-- 프로젝트 정보 -->
+        <div class="footer-info">
+          <div class="footer-project">캡스톤디자인 프로젝트</div>
+          <div class="footer-year">2026 · 1학기</div>
+        </div>
+
+      </div>
+
+      <!-- 하단 바 -->
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2026 Mark-It. Capstone Design Project.</div>
+        <div class="footer-team-label">4조</div>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- 스크립트 -->
+  <script src="app.js"></script>
+
+  <script src="jquery.min.js"></script>
+  <script src="ajax.js"></script>
+
+</body>
+</html>
