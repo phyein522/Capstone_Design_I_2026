@@ -1,5 +1,6 @@
 package com.marsking.mars_king.models.controller;
 
+import com.marsking.mars_king.models.common.ModeCode;
 import com.marsking.mars_king.models.common.ResponseCode;
 import com.marsking.mars_king.models.dto.*;
 import com.marsking.mars_king.models.service.MaskingService;
@@ -27,7 +28,13 @@ public class MaskingRestController {
 
     @PostMapping("/marskingimg")
     public ResponseEntity<MaskingResponseDto<MaskedImgDto>> maskingImage(@RequestBody MaskingRequestDto requestDto) {
-        MaskedImgDto result = service.maskingImage(requestDto);
+        MaskedImgDto result = service.maskingImage(requestDto, ModeCode.MODE_MASKING);
+        return ResponseEntity.ok().body(MaskingResponseDto.make(ResponseCode.SUCCESS, "OK", result));
+    }
+
+    @PostMapping("/printimg")
+    public ResponseEntity<MaskingResponseDto<MaskedImgDto>> printImage(@RequestBody MaskingRequestDto requestDto) {
+        MaskedImgDto result = service.maskingImage(requestDto, ModeCode.MODE_PRINT);
         return ResponseEntity.ok().body(MaskingResponseDto.make(ResponseCode.SUCCESS, "OK", result));
     }
 

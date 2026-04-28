@@ -3,3 +3,4 @@ uvicorn
 easyocr
 numpy
 opencv-python-headless
+pydantic

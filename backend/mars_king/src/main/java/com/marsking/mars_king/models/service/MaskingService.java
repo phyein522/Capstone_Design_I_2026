@@ -1,5 +1,6 @@
 package com.marsking.mars_king.models.service;
 
+import com.marsking.mars_king.models.common.ModeCode;
 import com.marsking.mars_king.models.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class MaskingService {
 		return this.pythonClient.postPython(requestDto);
 	}
 
-	public MaskedImgDto maskingImage(MaskingRequestDto requestDto) {
+	public MaskedImgDto maskingImage(MaskingRequestDto requestDto, ModeCode mode) {
 		String base64Image = requestDto.getImage();
 		String[] parts = base64Image.split(",");
 		String header = parts[0];
@@ -36,10 +37,10 @@ public class MaskingService {
 			image = ImageIO.read(bis);
 			bis.close();
 		} catch(IOException e) {
-			return null;
+			return new MaskedImgDto(requestDto.getImage());
 		}
 		if(image == null) {
-			return null;
+			return new MaskedImgDto(requestDto.getImage());
 		}
 
 		List<PositionDto> positions = requestDto.getPositions();
@@ -47,7 +48,7 @@ public class MaskingService {
 		// 사각형 그리기
 		Graphics2D g2d = image.createGraphics();
 		g2d.setColor(Color.BLACK);
-		g2d.setStroke(new BasicStroke(5));
+		g2d.setStroke(new BasicStroke(1));
 		positions.forEach(positionDto -> {
 			int x1 = positionDto.getX1();
 			int y1 = positionDto.getY1();
@@ -55,7 +56,7 @@ public class MaskingService {
 			int y2 = positionDto.getY2();
 			if(positionDto.getIsChecked()) {
 				g2d.fillRect(x1, y1, (x2 - x1), (y2 - y1));
-			} else {
+			} else if (mode == ModeCode.MODE_MASKING) {
 				g2d.drawRect(x1, y1, (x2 - x1), (y2 - y1));
 			}
 		});
@@ -68,10 +69,10 @@ public class MaskingService {
 			baos.close();
 			base64Image = Base64.getEncoder().encodeToString(imageBytes);
 		} catch(IOException e) {
-			return null;
+			return new MaskedImgDto(requestDto.getImage());
 		}
 		if(base64Image == null) {
-			return null;
+			return new MaskedImgDto(requestDto.getImage());
 		}
 		base64Image = header + "," + base64Image;
 
