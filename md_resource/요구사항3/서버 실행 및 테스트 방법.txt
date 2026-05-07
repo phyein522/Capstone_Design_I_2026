@@ -18,3 +18,14 @@
 docker 이미지 및 컨테이너 삭제 시
 13. cmd 창에서 docker-compose down 입력
 14. Docker Desktop에서 Images에서 삭제
+
+
+html/css/js 파일을 서버 폴더에 옮길 때
+src\main\resources\static 폴더에 전부 옮김
+
+
+파이썬 파일을 서버 폴더에 옮길 때
+face_detector_and_ocr\python\app 폴더에 main.py 파이썬 파일을 옮김
+
+
+테스트 성공 확인 후, 깃허브에 업로드 할 시, 자신의 작업 파일에 업로드하시면 됩니다.
