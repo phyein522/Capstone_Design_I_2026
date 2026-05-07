@@ -1,0 +1,20 @@
+1. Docker Desktop을 실행
+
+이미지/컨테이너 첫 생성 시
+2. face_detector_and_ocr 폴더로 이동 -> 경로 창에서 cmd 입력해서, 해당 경로의 cmd 창 띄움
+3. cmd 창에서    docker-compose up -d    입력
+4. Image 생성, Container 시작 까지 기다림 (컴퓨터 성능에 따라 10~20분 걸리기도 함)
+
+이미지/컨테이너 생성된 상태일 시
+5. Docker Desktop에서 Containers에서 Actions에서 실행 중인지 확인
+6. IntelliJ 실행
+7. mars_king 폴더 열기
+8. MarsKingApplication 실행
+9. Started 표시됨 확인
+10. 브라우저에서 http://localhost:8085 입력
+11. MarsKingApplication 중지
+12. Docker Desktop에서 Containers의 Actions에서 실행 중지
+
+docker 이미지 및 컨테이너 삭제 시
+13. cmd 창에서 docker-compose down 입력
+14. Docker Desktop에서 Images에서 삭제
