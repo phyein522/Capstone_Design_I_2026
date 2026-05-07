@@ -86,6 +86,27 @@ body {
 }
 
 
+/* 모바일 햄버거 메뉴 드롭다운 */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background: linear-gradient(
+      180deg,
+      rgba(58,159,212,0.98) 0%,
+      rgba(42,130,178,0.98) 100%
+    );
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    border-top: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 8px 24px rgba(40,130,200,0.25);
+    padding: 0.5rem 1rem 0.75rem;
+    margin-top: 0;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 9px 14px !important;
+    border-radius: var(--radius-sm);
+  }
+}
+
 /* =====================================================
    섹션 공통 - 앵커 위치 보정
    ===================================================== */
@@ -719,6 +740,16 @@ section {
   border-radius: 10px;
 }
 
+.result-item-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-sub);
+  background: rgba(120,200,240,0.12);
+  border: 1px solid rgba(120,200,240,0.25);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
 .type-badge.face {
   background: linear-gradient(135deg, #ffd6a5, #ffb347);
   color: #7a4000;
@@ -734,6 +765,17 @@ section {
   padding: 2rem 1rem;
   color: var(--text-muted);
   font-size: 13px;
+}
+
+.result-summary {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sky-dark);
+  background: rgba(120,200,240,0.10);
+  border: 1px solid rgba(120,200,240,0.25);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  margin-bottom: 8px;
 }
 
 .empty-icon { font-size: 30px; margin-bottom: 0.5rem; opacity: 0.5; }
