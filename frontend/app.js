@@ -74,72 +74,21 @@ function loadImage(file) {
 }
 
 
-// 마스킹 실행 (데모)
-// 실제 서비스: fetch('/api/mask', ...) 로 교체
-function startMasking() {
-  const runBtn   = document.getElementById('runBtn');
-  const progWrap = document.getElementById('progressWrap');
-  const progFill = document.getElementById('progressFill');
-  const progLbl  = document.getElementById('progressLabel');
-
-  runBtn.disabled = true;
-  progWrap.classList.add('show');
-
-  const steps = [
-    { w: 18,  msg: '이미지 분석 중...' },
-    { w: 42,  msg: '얼굴 감지 중...' },
-    { w: 67,  msg: 'OCR 텍스트 인식 중...' },
-    { w: 88,  msg: '마스킹 좌표 계산 중...' },
-    { w: 100, msg: '완료!' }
-  ];
-
-  let idx = 0;
-
-  function tick() {
-    if (idx >= steps.length) {
-
-      // ── 데모용 JSON 결과 (실제 서비스에서는 백엔드 API 응답으로 교체) ──
-      const jsonResults = [
-        { type: 'face', content: '얼굴',    x1: 100, y1:  80, x2: 260, y2: 230 },
-        { type: 'text', content: '이름',    x1:  50, y1: 290, x2: 180, y2: 315 },
-        { type: 'text', content: '전화번호', x1:  50, y1: 330, x2: 180, y2: 355 },
-      ];
-
-      setTimeout(() => {
-        progWrap.classList.remove('show');
-
-        // 마스킹 항목 선택 목록 재구성 (이름/얼굴 유지, 나머지 초기화 후 JSON 결과 추가)
-        updateMaskingList(jsonResults);
-
-        // 감지 결과 카드 렌더링
-        renderResults(jsonResults);
-
-        document.getElementById('downloadArea').style.display = 'flex';
-        runBtn.disabled = false;
-      }, 350);
-
-      return;
-    }
-
-    const s = steps[idx++];
-    progFill.style.width = s.w + '%';
-    progLbl.textContent  = s.msg;
-    setTimeout(tick, 320 + Math.random() * 280);
-  }
-
-  tick();
-}
+// startMasking(): ajax.js의 #runBtn click 핸들러가 대신 처리함
+// (진행바 애니메이션 → postImg() 호출)
+// 혹시 onclick="startMasking()" 속성이 남아있을 경우를 위해 빈 함수로 유지
+function startMasking() {}
 
 
 // 마스킹 항목 선택 목록 재구성
-// - 이름/얼굴 고정 항목은 유지
-// - 이전에 추가된 JSON/사용자 항목은 전부 제거
-// - JSON results 중 이름/얼굴과 중복되지 않는 항목만 추가
+// - 이름/얼굴 고정 항목은 좌표가 응답에 있으면 hidden input 값 업데이트
+// - 새로운 항목(중복 아닌 것)만 li 추가
+// - ajax.js가 읽는 구조: li > div(hidden inputs) + div.masking-item-left(checkbox)
 function updateMaskingList(results) {
   const list      = document.getElementById('maskingList');
   const container = document.getElementById('addWordContainer');
 
-  // 고정 항목(data-fixed)이 아닌 항목만 제거
+  // 고정 항목(data-fixed)이 아닌 동적 항목만 제거
   list.querySelectorAll('.masking-item:not([data-fixed])').forEach(el => el.remove());
 
   // 현재 고정 항목의 라벨 텍스트 수집 (중복 체크용)
@@ -147,14 +96,43 @@ function updateMaskingList(results) {
     [...list.querySelectorAll('.masking-item-label')].map(l => l.textContent.trim())
   );
 
-  // JSON 결과 중 중복 아닌 항목만 추가
   results.forEach((item, i) => {
-    if (existingLabels.has(item.content)) return; // 중복 스킵
+    if (existingLabels.has(item.content)) {
+      // 이미 있는 항목(고정 포함): hidden input 좌표값 업데이트
+      const labels = list.querySelectorAll('.masking-item-label');
+      labels.forEach(label => {
+        if (label.textContent.trim() === item.content) {
+          const li = label.closest('.masking-item');
+          const hiddenDiv = li.querySelector('.hidden-coords');
+          if (hiddenDiv) {
+            const inputs = hiddenDiv.querySelectorAll('input[type="hidden"]');
+            if (inputs.length === 6) {
+              inputs[0].value = item.x1;
+              inputs[1].value = item.y1;
+              inputs[2].value = item.x2;
+              inputs[3].value = item.y2;
+              inputs[4].value = item.type;
+              inputs[5].value = item.content;
+            }
+          }
+        }
+      });
+      return;
+    }
 
+    // 새 항목 추가
     const uid = `json-${Date.now()}-${i}`;
     const li  = document.createElement('li');
     li.className = 'masking-item';
     li.innerHTML = `
+      <div class="hidden-coords" style="display:none;">
+        <input type="hidden" value="${item.x1}" />
+        <input type="hidden" value="${item.y1}" />
+        <input type="hidden" value="${item.x2}" />
+        <input type="hidden" value="${item.y2}" />
+        <input type="hidden" value="${item.type}" />
+        <input type="hidden" value="${item.content}" />
+      </div>
       <div class="masking-item-left">
         <input class="aero-check" type="checkbox"
           id="chk-${uid}" value="${item.content}" checked>
@@ -169,6 +147,9 @@ function updateMaskingList(results) {
     `;
     list.insertBefore(li, container);
   });
+
+  // 감지 결과 카드 렌더링
+  renderResults(results);
 }
 
 
@@ -177,8 +158,10 @@ function renderResults(results) {
   const list  = document.getElementById('resultList');
   const empty = document.getElementById('resultEmpty');
   const count = document.getElementById('resultCount');
+  const summary = document.getElementById('resultSummary');
 
   count.textContent = `${results.length}개`;
+  if (summary) summary.style.display = 'none';
 
   if (!results.length) {
     empty.style.display = 'block';
@@ -186,28 +169,36 @@ function renderResults(results) {
     return;
   }
 
+  // content별 개수 집계
+  const countMap = {};
+  const typeMap  = {};
+  results.forEach(item => {
+    countMap[item.content] = (countMap[item.content] || 0) + 1;
+    typeMap[item.content]  = item.type;
+  });
+
   list.innerHTML = '';
 
+  // content별로 한 행씩 렌더링
+  const rendered = new Set();
   results.forEach((item, i) => {
-    const li = document.createElement('li');
-    li.className = 'result-item';
+    if (rendered.has(item.content)) return;
+    rendered.add(item.content);
 
-    li.dataset.x1   = item.x1;
-    li.dataset.y1   = item.y1;
-    li.dataset.x2   = item.x2;
-    li.dataset.y2   = item.y2;
+    const n  = countMap[item.content];
+    const li = document.createElement('li');
+    li.className    = 'result-item';
     li.dataset.type = item.type;
 
     li.innerHTML = `
       <div class="result-item-left">
         <input type="checkbox" class="aero-check"
           id="res-${i}" checked
-          onchange="toggleResult(this,${i})">
+          onchange="toggleResult(this,'${item.content}')">
         <label class="result-content-label" for="res-${i}">${item.content}</label>
-        <span class="result-coords">(${item.x1},${item.y1})~(${item.x2},${item.y2})</span>
-        <span class="result-type">${item.type}</span>
       </div>
-      <div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="result-item-count">${n}개</span>
         <span class="type-badge ${item.type}">
           ${item.type === 'face' ? '얼굴' : '텍스트'}
         </span>
@@ -222,9 +213,17 @@ function renderResults(results) {
 }
 
 
-// 감지 결과 항목 체크/언체크
-function toggleResult(checkbox, idx) {
-  console.log(`항목 ${idx}: ${checkbox.checked ? '마스킹' : '제외'}`);
+// 감지 결과 항목 체크/언체크 → 마스킹 항목 선택 목록의 체크박스도 동기화
+function toggleResult(checkbox, content) {
+  const maskingList = document.getElementById('maskingList');
+  const labels = maskingList.querySelectorAll('.masking-item-label');
+  labels.forEach(label => {
+    if (label.textContent.trim() === content) {
+      const chk = label.closest('.masking-item').querySelector('.aero-check');
+      if (chk) chk.checked = checkbox.checked;
+    }
+  });
+  // 체크 변경 후 재마스킹은 ajax.js의 .aero-check change 이벤트가 처리
 }
 
 
@@ -243,6 +242,7 @@ function deleteItem(btn) {
 
 
 // 단어 직접 추가
+// 사용자가 직접 추가한 단어는 좌표 없이 추가 (백엔드가 content 기반으로 처리)
 function addMaskWord() {
   const input     = document.getElementById('addWord');
   const word      = input.value.trim();
@@ -255,6 +255,14 @@ function addMaskWord() {
   const li  = document.createElement('li');
   li.className = 'masking-item';
   li.innerHTML = `
+    <div class="hidden-coords" style="display:none;">
+      <input type="hidden" value="" />
+      <input type="hidden" value="" />
+      <input type="hidden" value="" />
+      <input type="hidden" value="" />
+      <input type="hidden" value="text" />
+      <input type="hidden" value="${word}" />
+    </div>
     <div class="masking-item-left">
       <input class="aero-check" type="checkbox"
         id="chk-${uid}" value="${word}" checked>
