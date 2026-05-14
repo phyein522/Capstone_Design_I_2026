@@ -27,7 +27,7 @@ class PrivacyDetector:
                 print(f"[Error] 다운로드 실패: {e}")
 
     def detect(self, img_path):
-        """이미지에서 여러 명의 얼굴과 텍스트를 찾아 좌표를 반환합니다."""
+        """이미지에서 얼굴과 텍스트를 찾아 좌표를 반환합니다."""
         img = cv2.imread(img_path)
         if img is None:
             return {"status": "error", "message": f"파일을 읽을 수 없습니다: {img_path}"}
