@@ -47,6 +47,9 @@ function maskingImg() {
     };
     console.log("요청:", requestData);
 
+    //frontend에서 마스킹 처리+마스킹 가능 위치 표시하는 코드
+    //(원본 이미지(#imgPreview)와 positionList의 좌표와 isChecked 이용, isChecked가 true면 마스킹, false면 사각형으로 표시)
+    /*
     $.ajax({
         url: "/api/marskingimg",
         type: "POST",
@@ -63,6 +66,7 @@ function maskingImg() {
     }).always(function() {
         console.log("maskingImg 완료");
     });
+    */
 }
 
 function printImg() {
@@ -89,6 +93,9 @@ function printImg() {
     };
     console.log("요청:", requestData);
 
+    //frontend에서 마스킹된 이미지 출력하는 코드
+    // (원본 이미지(#imgPreview)와 positionList를 이용해, isChecked가 true인 곳만 마스킹 해서, 이미지 반환)
+    /*
     $.ajax({
         url: "/api/printimg",
         type: "POST",
@@ -110,6 +117,7 @@ function printImg() {
     }).always(function() {
         console.log("printImg 완료");
     });
+    */
 }
 
 function changePreView(image) {
