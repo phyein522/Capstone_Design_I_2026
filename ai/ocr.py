@@ -27,10 +27,10 @@ class PrivacyDetector:
                 print(f"[Error] 다운로드 실패: {e}")
 
     def detect(self, img_path):
-        """이미지에서 얼굴과 텍스트를 찾아 좌표를 반환합니다."""
+        """이미지에서 여러 명의 얼굴과 텍스트를 찾아 좌표를 반환합니다."""
         img = cv2.imread(img_path)
         if img is None:
-            return {"status": "error", "message": f"파일을 읽을 수 없습니다. 경로를 확인하세요: {img_path}"}
+            return {"status": "error", "message": f"파일을 읽을 수 없습니다: {img_path}"}
 
         h, w, _ = img.shape
         final_json = []
@@ -45,19 +45,36 @@ class PrivacyDetector:
         else:
             scores, boxes = np.squeeze(outs[0]), np.squeeze(outs[1])
 
+        # 탐지된 얼굴들을 임시로 담을 리스트
+        detected_faces = []
+
         for i in range(len(scores)):
             score = scores[i][1] if len(scores.shape) > 1 else scores[i]
-            if score > 0.8:
+            if score > 0.8:  # 신뢰도 임계값
                 box = boxes[i]
                 x1, y1, x2, y2 = int(box[0]*w), int(box[1]*h), int(box[2]*w), int(box[3]*h)
-                final_json.append({
-                    "x1": max(0, x1), "y1": max(0, y1),
-                    "x2": min(w, x2), "y2": min(h, y2),
-                    "type": "face", "content": "얼굴"
-                })
-                break
-
-        # 2. 텍스트 인식 (EasyOCR)
+                
+                # --- 중복 좌표 필터링 로직 ---
+                is_duplicate = False
+                for face in detected_faces:
+                    # 기존에 저장된 얼굴과 현재 얼굴의 겹치는 영역 계산 (간단한 거리/크기 비교)
+                    # 중심점의 거리가 박스 크기보다 작으면 같은 얼굴로 간주
+                    center_dist = abs((x1+x2)/2 - (face['x1']+face['x2'])/2) + \
+                                  abs((y1+y2)/2 - (face['y1']+face['y2'])/2)
+                    if center_dist < (x2-x1) * 0.5: # 겹침 허용 범위 조절
+                        is_duplicate = True
+                        break
+                
+                if not is_duplicate:
+                    face_data = {
+                        "x1": max(0, x1), "y1": max(0, y1),
+                        "x2": min(w, x2), "y2": min(h, y2),
+                        "type": "face", "content": "얼굴"
+                    }
+                    detected_faces.append(face_data)
+                    final_json.append(face_data)
+        
+        # 2. 텍스트 인식 (EasyOCR) - 기존과 동일
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         ocr_results = self.reader.readtext(gray)
 
@@ -71,7 +88,7 @@ class PrivacyDetector:
                 })
 
         return final_json
-
+        
 # --- 실행부 ---
 if __name__ == "__main__":
     detector = PrivacyDetector()
