@@ -657,7 +657,6 @@ section {
   background: rgba(255,255,255,0.38);
   border: 1px solid rgba(255,255,255,0.65);
   transition: background 0.15s, transform 0.1s;
-  cursor: pointer;
 }
 
 .result-item:hover {
@@ -680,7 +679,6 @@ section {
   flex-shrink: 0;
   transition: all 0.18s;
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
-  /* X 표시 - 언체크 상태임을 명시 */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2.5 2.5l5 5M7.5 2.5l-5 5' stroke='%23c8dde6' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: center;
@@ -696,17 +694,15 @@ section {
   box-shadow: 0 2px 8px rgba(58,159,212,0.5);
 }
 
-/* ── 체크된 행 전체 ── */
-.masking-item:has(.aero-check:checked),
-.result-item:has(.aero-check:checked) {
+/* ── 체크된 행 전체 (마스킹 항목만) ── */
+.masking-item:has(.aero-check:checked) {
   background: rgba(147,212,245,0.12);
   border: 1px solid rgba(74,174,216,0.28);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
-/* ── 언체크된 행 전체 ── */
-.masking-item:has(.aero-check:not(:checked)),
-.result-item:has(.aero-check:not(:checked)) {
+/* ── 언체크된 행 전체 (마스킹 항목만) ── */
+.masking-item:has(.aero-check:not(:checked)) {
   background: rgba(248,251,253,0.35);
   border: 1px solid rgba(210,228,238,0.35);
   opacity: 0.55;
@@ -721,8 +717,7 @@ section {
   transition: all 0.18s;
 }
 
-/* ── 언체크 시 라벨 흐리게 + 취소선 ── */
-.result-item:has(.aero-check:not(:checked)) .result-content-label,
+/* ── 언체크 시 라벨 흐리게 + 취소선 (마스킹 항목만) ── */
 .masking-item:has(.aero-check:not(:checked)) .masking-item-label {
   color: #a8bec7;
   text-decoration: line-through;
