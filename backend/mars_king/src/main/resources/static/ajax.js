@@ -15,6 +15,7 @@ function postImg() {
         console.log("postImg 성공:", data);
         updateMaskingList(data.data);
         maskingImg();
+        printImg();     // 추가
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error("postImg 실패:", textStatus);
         // 실패해도 이미지 유지
@@ -31,42 +32,47 @@ function maskingImg() {
         let data = li.first().children();
         let liIsChecked = li.eq(1).children().first().is(':checked');
         let json = {
-            x1: data.eq(0).val()
-            , y1: data.eq(1).val()
-            , x2: data.eq(2).val()
-            , y2: data.eq(3).val()
+            x1: parseFloat(data.eq(0).val())
+            , y1: parseFloat(data.eq(1).val())
+            , x2: parseFloat(data.eq(2).val())
+            , y2: parseFloat(data.eq(3).val())
             , type: data.eq(4).val()
             , content: data.eq(5).val()
             , isChecked: liIsChecked
         };
         positionList.push(json);
     }
-    let requestData = {
-        image: $("#imgPreview").attr("src")
-        , positions: positionList
-    };
-    console.log("요청:", requestData);
 
     //frontend에서 마스킹 처리+마스킹 가능 위치 표시하는 코드
     //(원본 이미지(#imgPreview)와 positionList의 좌표와 isChecked 이용, isChecked가 true면 마스킹, false면 사각형으로 표시)
-    /*
-    $.ajax({
-        url: "/api/marskingimg",
-        type: "POST",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify(requestData), // JSON 문자열로 변환
-    }).done(function(data, textStatus, jqXHR) {
-        console.log("maskingImg 성공:", data);
-        changePreView(data.data.image);
-        printImg();
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error("maskingImg 실패:", textStatus);
-        // 실패해도 이미지 유지
-    }).always(function() {
-        console.log("maskingImg 완료");
-    });
-    */
+    const srcImg = new Image();
+    srcImg.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = srcImg.naturalWidth;
+        canvas.height = srcImg.naturalHeight;
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(srcImg, 0, 0);
+
+        positionList.forEach(pos => {
+            const x = pos.x1, y = pos.y1;
+            const w = pos.x2 - pos.x1, h = pos.y2 - pos.y1;
+
+            if (pos.isChecked) {
+                // 마스킹 선택됨 → 검정 박스로 채움
+                ctx.fillStyle = "black";
+                ctx.fillRect(x, y, w, h);
+            } else {
+                // 마스킹 미선택 → 감지 위치만 테두리로 표시
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, w, h);
+            }
+        });
+
+        changePreView(canvas.toDataURL("image/png"));
+    };
+    srcImg.src = $("#imgPreview").attr("src");
 }
 
 function printImg() {
@@ -77,47 +83,46 @@ function printImg() {
         let data = li.first().children();
         let liIsChecked = li.eq(1).children().first().is(':checked');
         let json = {
-            x1: data.eq(0).val()
-            , y1: data.eq(1).val()
-            , x2: data.eq(2).val()
-            , y2: data.eq(3).val()
+            x1: parseFloat(data.eq(0).val())
+            , y1: parseFloat(data.eq(1).val())
+            , x2: parseFloat(data.eq(2).val())
+            , y2: parseFloat(data.eq(3).val())
             , type: data.eq(4).val()
             , content: data.eq(5).val()
             , isChecked: liIsChecked
         };
         positionList.push(json);
     }
-    let requestData = {
-        image: $("#imgPreview").attr("src")
-        , positions: positionList
-    };
-    console.log("요청:", requestData);
 
     //frontend에서 마스킹된 이미지 출력하는 코드
     // (원본 이미지(#imgPreview)와 positionList를 이용해, isChecked가 true인 곳만 마스킹 해서, 이미지 반환)
-    /*
-    $.ajax({
-        url: "/api/printimg",
-        type: "POST",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify(requestData), // JSON 문자열로 변환
-    }).done(function(data, textStatus, jqXHR) {
-        console.log("printImg 성공:", data);
-        setDownloadHref(data.data.image);
+    const srcImg = new Image();
+    srcImg.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = srcImg.naturalWidth;
+        canvas.height = srcImg.naturalHeight;
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(srcImg, 0, 0);
+
+        positionList.forEach(pos => {
+            if (pos.isChecked) {
+                // 마스킹 선택된 곳만 검정 박스로 채움
+                ctx.fillStyle = "black";
+                ctx.fillRect(pos.x1, pos.y1, pos.x2 - pos.x1, pos.y2 - pos.y1);
+            }
+            // unchecked는 아무것도 그리지 않음
+        });
+
+        const maskedDataUrl = canvas.toDataURL("image/png");
+        setDownloadHref(maskedDataUrl);
 
         // 다운로드 버튼 표시 + 진행바 숨김 + 버튼 활성화
         $("#progressWrap").removeClass("show");
         $("#downloadArea").css("display", "flex");
         $("#runBtn").prop("disabled", false);
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error("printImg 실패:", textStatus);
-        // 실패해도 이미지 유지
-        $("#runBtn").prop("disabled", false);
-    }).always(function() {
-        console.log("printImg 완료");
-    });
-    */
+    };
+    srcImg.src = $("#imgPreview").attr("src");
 }
 
 function changePreView(image) {
@@ -166,5 +171,6 @@ $(() => {
     $(document).on("change", ".aero-check", function(e) {
         e.preventDefault();
         maskingImg();
+        printImg();     // 추가
     });
 });

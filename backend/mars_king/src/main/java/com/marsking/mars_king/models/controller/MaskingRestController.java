@@ -26,6 +26,7 @@ public class MaskingRestController {
         return ResponseEntity.ok().body(MaskingResponseDto.make(ResponseCode.SUCCESS, "OK", result));
     }
 
+    /*
     @PostMapping("/marskingimg")
     public ResponseEntity<MaskingResponseDto<MaskedImgDto>> maskingImage(@RequestBody MaskingRequestDto requestDto) {
         MaskedImgDto result = service.maskingImage(requestDto, ModeCode.MODE_MASKING);
@@ -37,6 +38,7 @@ public class MaskingRestController {
         MaskedImgDto result = service.maskingImage(requestDto, ModeCode.MODE_PRINT);
         return ResponseEntity.ok().body(MaskingResponseDto.make(ResponseCode.SUCCESS, "OK", result));
     }
+    */
 
     @PostMapping("/test")
     public ResponseEntity<MaskingResponseDto<MaskingDto>> test() {

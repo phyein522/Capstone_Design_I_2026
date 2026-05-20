@@ -23,6 +23,7 @@ public class MaskingService {
 		return this.pythonClient.postPython(requestDto);
 	}
 
+	/*
 	public MaskedImgDto maskingImage(MaskingRequestDto requestDto, ModeCode mode) {
 		String base64Image = requestDto.getImage();
 		String[] parts = base64Image.split(",");
@@ -79,4 +80,5 @@ public class MaskingService {
 		MaskedImgDto result = new MaskedImgDto(base64Image);
 		return result;
 	}
+	*/
 }
