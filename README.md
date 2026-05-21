@@ -34,39 +34,6 @@ https://github.com/JaidedAI/EasyOCR
 
 <br>
 
-6주차
-- 프론트엔드 디자인 결정
-- 역할 별 요구사항
-	- python<br>
-result = [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"x1":"시작x좌표"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "y1":"시작y좌표"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "x2":"끝x좌표"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "y2":"끝y좌표"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "type":"face"&nbsp;&nbsp;&nbsp;&nbsp;#얼굴 인식일 시<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "content":"얼굴"&nbsp;&nbsp;&nbsp;&nbsp;#JSON 형식 통일을 위해 넣음<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;, {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"x1":"시작x좌표"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "y1":"시작y좌표"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "x2":"끝x좌표"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "y2":"끝y좌표"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "type":"text"&nbsp;&nbsp;&nbsp;&nbsp;#OCR 텍스트 일시<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, "content":"텍스트"&nbsp;&nbsp;&nbsp;&nbsp;#OCR이 인식한 텍스트의 내용을 담아야 하나, 현재는 임시로 "텍스트"라는 문자열을 담음<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;, ...<br>
-]<br>
-print(result)&nbsp;&nbsp;&nbsp;&nbsp;#결과가 요구하는 형태인지 확인
-	- 프론트엔드
-<img src="./md_resource/요구사항 - 프론트엔드.png" />
-	- 백엔드
-		1. 프론트엔드가 업로드한 이미지를 python에 전달
-		2. python이 응답한 JSON(좌표, type, content)을 프론트엔드에 전달
-		3. 프론트엔드가 체크박스에 체크 시, 해당 좌표에 마스킹
-
-<br>
-
 8주차
 - 중간 결과 보고서 (최종 보고서 양식) (4/21(화) ~ 4/29(수))
 - 중간 결과 발표 준비
@@ -79,3 +46,9 @@ print(result)&nbsp;&nbsp;&nbsp;&nbsp;#결과가 요구하는 형태인지 확인
 	- 향후 계획
 
 <hr>
+
+최종발표: 6/11(목) (시험기간 중)
+결과 보고서 제출: 6/11(목) (E-class)
+	- 발표 시 ppt로
+	- 질의 응답 5~10분
+	- 점심 제공
