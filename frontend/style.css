@@ -786,8 +786,7 @@ section {
 
 .masking-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   padding: 9px 12px;
   border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.38);
@@ -796,7 +795,41 @@ section {
 }
 
 .masking-item:hover { background: rgba(255,255,255,0.75); }
+
+.masking-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .masking-item-left  { display: flex; align-items: center; gap: 9px; }
+
+.masking-item-edit {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(120,200,240,0.25);
+}
+
+.coord-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+}
+
+.coord-input {
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.aero-radio {
+  accent-color: var(--sky);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
 
 .masking-item-label {
   font-size: 13px;
