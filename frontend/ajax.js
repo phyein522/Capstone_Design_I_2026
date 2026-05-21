@@ -18,7 +18,8 @@ function postImg() {
         printImg();     // 추가
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.error("postImg 실패:", textStatus);
-        // 실패해도 이미지 유지
+        maskingImg();
+        printImg();
     }).always(function() {
         console.log("postImg 완료");
     });
@@ -27,21 +28,20 @@ function postImg() {
 function maskingImg() {
     let list = $("#maskingList").children();
     let positionList = [];
-    for(let i = 0; i < list.length - 1; i++) {
-        let li = list.eq(i).children();
-        let data = li.first().children();
-        let liIsChecked = li.eq(1).children().first().is(':checked');
-        let json = {
-            x1: parseFloat(data.eq(0).val())
-            , y1: parseFloat(data.eq(1).val())
-            , x2: parseFloat(data.eq(2).val())
-            , y2: parseFloat(data.eq(3).val())
-            , type: data.eq(4).val()
-            , content: data.eq(5).val()
-            , isChecked: liIsChecked
-        };
-        positionList.push(json);
-    }
+    list.filter(".masking-item").each(function() {
+        const li = $(this);
+        const coords = li.find(".hidden-coords input");
+        const isChecked = li.find(".aero-check").is(":checked");
+        positionList.push({
+            x1: parseFloat(coords.eq(0).val()) || 0
+            , y1: parseFloat(coords.eq(1).val()) || 0
+            , x2: parseFloat(coords.eq(2).val()) || 0
+            , y2: parseFloat(coords.eq(3).val()) || 0
+            , type: coords.eq(4).val()
+            , content: coords.eq(5).val()
+            , isChecked: isChecked
+        });
+    });
 
     //frontend에서 마스킹 처리+마스킹 가능 위치 표시하는 코드
     //(원본 이미지(#imgPreview)와 positionList의 좌표와 isChecked 이용, isChecked가 true면 마스킹, false면 사각형으로 표시)
@@ -78,21 +78,20 @@ function maskingImg() {
 function printImg() {
     let list = $("#maskingList").children();
     let positionList = [];
-    for(let i = 0; i < list.length - 1; i++) {
-        let li = list.eq(i).children();
-        let data = li.first().children();
-        let liIsChecked = li.eq(1).children().first().is(':checked');
-        let json = {
-            x1: parseFloat(data.eq(0).val())
-            , y1: parseFloat(data.eq(1).val())
-            , x2: parseFloat(data.eq(2).val())
-            , y2: parseFloat(data.eq(3).val())
-            , type: data.eq(4).val()
-            , content: data.eq(5).val()
-            , isChecked: liIsChecked
-        };
-        positionList.push(json);
-    }
+    list.filter(".masking-item").each(function() {
+        const li = $(this);
+        const coords = li.find(".hidden-coords input");
+        const isChecked = li.find(".aero-check").is(":checked");
+        positionList.push({
+            x1: parseFloat(coords.eq(0).val()) || 0
+            , y1: parseFloat(coords.eq(1).val()) || 0
+            , x2: parseFloat(coords.eq(2).val()) || 0
+            , y2: parseFloat(coords.eq(3).val()) || 0
+            , type: coords.eq(4).val()
+            , content: coords.eq(5).val()
+            , isChecked: isChecked
+        });
+    });
 
     //frontend에서 마스킹된 이미지 출력하는 코드
     // (원본 이미지(#imgPreview)와 positionList를 이용해, isChecked가 true인 곳만 마스킹 해서, 이미지 반환)
@@ -117,8 +116,9 @@ function printImg() {
         const maskedDataUrl = canvas.toDataURL("image/png");
         setDownloadHref(maskedDataUrl);
 
-        // 다운로드 버튼 표시 + 진행바 숨김 + 버튼 활성화
-        $("#progressWrap").removeClass("show");
+        // 100% + 완료 표시 후 진행바 유지, 다운로드 버튼 표시
+        $("#progressFill").css("width", "100%");
+        $("#progressLabel").text("완료✅ 100%");
         $("#downloadArea").css("display", "flex");
         $("#runBtn").prop("disabled", false);
     };
@@ -142,6 +142,8 @@ $(() => {
         const progLbl  = document.getElementById('progressLabel');
 
         $("#runBtn").prop("disabled", true);
+        progFill.style.width = '0%';
+        progLbl.textContent = '처리 중...';
         progWrap.classList.add('show');
 
         // 진행바 애니메이션 후 실제 API 호출
