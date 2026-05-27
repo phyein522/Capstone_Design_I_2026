@@ -1,110 +1,88 @@
 import os
-import cv2
-import numpy as np
 import json
+import cv2
 import easyocr
-import urllib.request
+from ultralytics import YOLO
 
-class PrivacyDetector:
-    def __init__(self, model_path="version-RFB-320.onnx"):
-        self.model_path = model_path
-        self.check_and_download_model()
+class SuperPrivacyDetector:
+    def __init__(self):
+        # 웹 서버 백엔드에서 로그를 추적할 수 있도록 시스템 프린트 유지
+        print("[System] 초고성능 AI 탐지 엔진 초기화 중 (YOLOv8 + EasyOCR 웹 연동형)...")
         
-        print("[System] 탐지 엔진 초기화 중 (CPU 모드)...")
-        self.reader = easyocr.Reader(['ko', 'en'], gpu=False)
-        self.face_net = cv2.dnn.readNetFromONNX(self.model_path)
-        print("[System] 모든 준비가 완료되었습니다.")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model_name = "yolov8n_100e.pt"
+        model_path = os.path.join(current_dir, model_name)
+        
+        self.face_model = YOLO(model_path)
+        self.ocr_reader = easyocr.Reader(['ko', 'en'], gpu=False)
+        print("[System] 모든 고성능 엔진이 로드되었습니다.\n")
 
-    def check_and_download_model(self):
-        """AI 모델 파일이 없으면 자동으로 다운로드합니다."""
-        if not os.path.exists(self.model_path):
-            print(f"[Network] 모델 파일이 없습니다. 다운로드를 시작합니다...")
-            url = "https://github.com/Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB/raw/master/models/onnx/version-RFB-320.onnx"
-            try:
-                urllib.request.urlretrieve(url, self.model_path)
-                print("[Network] 모델 다운로드 완료.")
-            except Exception as e:
-                print(f"[Error] 다운로드 실패: {e}")
+    def detect(self, image_path):
+        image = cv2.imread(image_path)
+        if image is None:
+            return {"error": f"이미지를 읽을 수 없습니다: {image_path}"}
 
-    def detect(self, img_path):
-        """이미지에서 얼굴과 텍스트를 찾아 좌표를 반환합니다."""
-        img = cv2.imread(img_path)
-        if img is None:
-            return {"status": "error", "message": f"파일을 읽을 수 없습니다: {img_path}"}
-
-        h, w, _ = img.shape
+        h, w, _ = image.shape
         final_json = []
 
-        # 1. 얼굴 인식 (Face Detection)
-        blob = cv2.dnn.blobFromImage(cv2.resize(img, (320, 240)), 1/127.5, (320, 240), 127.5)
-        self.face_net.setInput(blob)
-        outs = self.face_net.forward(self.face_net.getUnconnectedOutLayersNames())
+        # 1. YOLOv8 얼굴 인식
+        face_results = self.face_model(image, imgsz=640, conf=0.4, iou=0.45, verbose=False)[0]
+        for i, box in enumerate(face_results.boxes):
+            xyxy = box.xyxy[0].tolist()
+            x1, y1, x2, y2 = int(xyxy[0]), int(xyxy[1]), int(xyxy[2]), int(xyxy[3])
+            
+            face_data = {
+                "x1": max(0, x1), "y1": max(0, y1), "x2": min(w, x2), "y2": min(h, y2),
+                "type": "face", "content": f"Face_{i+1}"
+            }
+            final_json.append(face_data)
 
-        if outs[0].shape[-1] == 4:
-            boxes, scores = np.squeeze(outs[0]), np.squeeze(outs[1])
-        else:
-            scores, boxes = np.squeeze(outs[0]), np.squeeze(outs[1])
-
-        # 탐지된 얼굴들을 임시로 담을 리스트
-        detected_faces = []
-
-        for i in range(len(scores)):
-            score = scores[i][1] if len(scores.shape) > 1 else scores[i]
-            if score > 0.8:  # 신뢰도 임계값
-                box = boxes[i]
-                x1, y1, x2, y2 = int(box[0]*w), int(box[1]*h), int(box[2]*w), int(box[3]*h)
-                
-                # --- 중복 좌표 필터링 로직 ---
-                is_duplicate = False
-                for face in detected_faces:
-                    # 기존에 저장된 얼굴과 현재 얼굴의 겹치는 영역 계산 (간단한 거리/크기 비교)
-                    # 중심점의 거리가 박스 크기보다 작으면 같은 얼굴로 간주
-                    center_dist = abs((x1+x2)/2 - (face['x1']+face['x2'])/2) + \
-                                  abs((y1+y2)/2 - (face['y1']+face['y2'])/2)
-                    if center_dist < (x2-x1) * 0.5: # 겹침 허용 범위 조절
-                        is_duplicate = True
-                        break
-                
-                if not is_duplicate:
-                    face_data = {
-                        "x1": max(0, x1), "y1": max(0, y1),
-                        "x2": min(w, x2), "y2": min(h, y2),
-                        "type": "face", "content": "얼굴"
-                    }
-                    detected_faces.append(face_data)
-                    final_json.append(face_data)
-        
-        # 2. 텍스트 인식 (EasyOCR) - 기존과 동일
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        ocr_results = self.reader.readtext(gray)
+        # 2. EasyOCR 텍스트 정밀 탐지
+        ocr_results = self.ocr_reader.readtext(
+            image, 
+            decoder='greedy', 
+            beamWidth=10,            
+            contrast_ths=0.05,      
+            adjust_contrast=0.7,    
+            text_threshold=0.15,    
+            low_text=0.3,           
+            min_size=3,             
+            width_ths=0.8,          
+            slope_ths=0.3,          
+            ycenter_ths=0.3,        
+            paragraph=False
+        )
 
         for (bbox, text, prob) in ocr_results:
-            if prob > 0.3:
+            if prob > 0.05:
                 x1, y1 = int(bbox[0][0]), int(bbox[0][1])
                 x2, y2 = int(bbox[2][0]), int(bbox[2][1])
-                final_json.append({
-                    "x1": x1, "y1": y1, "x2": x2, "y2": y2,
-                    "type": "text", "content": text
-                })
+                
+                text_str = str(text).strip()
+                
+                if len(text_str) <= 1 and not text_str.isdigit() and not (44032 <= ord(text_str[0]) <= 55203):
+                    continue
 
+                text_data = {
+                    "x1": max(0, x1), "y1": max(0, y1), "x2": min(w, x2), "y2": min(h, y2),
+                    "type": "text", "content": text_str
+                }
+                final_json.append(text_data)
+
+        # 웹 사이트 백엔드(JSP, Node.js 등)가 파싱할 수 있도록 최종 JSON 배열 데이터만 깔끔하게 반환
         return final_json
-        
-# --- 실행부 ---
+
 if __name__ == "__main__":
-    detector = PrivacyDetector()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # [중요] 사진 파일이 ocr.py와 같은 폴더에 있어야 합니다!
-    my_image = "test_id.png" 
-    
-    # 현재 파일의 경로를 기준으로 사진을 찾도록 보강
-    base_path = os.path.dirname(__file__)
-    full_path = os.path.join(base_path, my_image)
-    
+    # 웹 서버에 저장될 업로드 이미지 경로를 예시로 매핑
+    image_name = "test_id.png" 
+    full_path = os.path.join(current_dir, image_name)
+
     if os.path.exists(full_path):
+        detector = SuperPrivacyDetector()
         results = detector.detect(full_path)
-        print("\n" + "="*50)
-        print("[AI 분석 결과 JSON 데이터]")
+        
         print(json.dumps(results, ensure_ascii=False, indent=4))
-        print("="*50)
     else:
-        print(f"\n[알림] '{my_image}' 파일을 찾을 수 없습니다.")
+        print(json.dumps({"error": "파일을 찾을 수 없습니다."}, ensure_ascii=False))
