@@ -57,7 +57,7 @@ function loadImage(file) {
 
     document.getElementById('uploadTitle').textContent = file.name;
     document.getElementById('uploadSubtitle').textContent =
-        `${(file.size / 1024).toFixed(0)}KB · 아래 버튼으로 마스킹 시작`;
+      `${(file.size/1024).toFixed(0)}KB · 아래 버튼으로 마스킹 시작`;
     document.getElementById('runBtn').disabled = false;
 
     document.getElementById('resultList').style.display = 'none';
@@ -73,9 +73,8 @@ function loadImage(file) {
 // startMasking(): ajax.js의 #runBtn click 핸들러가 대신 처리함
 function startMasking() {}
 
-// 마스킹 항목 선택 목록 재구성
-// - 고정 항목 없음: 기존 동적 항목 전부 제거 후 새로 추가
-// - 중복 content는 건너뜀
+//  마스킹 항목 목록 재구성 
+// content 중복 제거 후 항목 추가
 function updateMaskingList(results) {
   const list      = document.getElementById('maskingList');
   const container = document.getElementById('addWordContainer');
@@ -83,7 +82,6 @@ function updateMaskingList(results) {
   // 기존 동적 항목 모두 제거
   list.querySelectorAll('.masking-item').forEach(el => el.remove());
 
-  // content 중복 체크용
   const seen = new Set();
 
   results.forEach((item, i) => {
@@ -91,37 +89,103 @@ function updateMaskingList(results) {
     seen.add(item.content);
 
     const uid = `json-${Date.now()}-${i}`;
-    const li  = document.createElement('li');
-    li.className = 'masking-item';
-    li.innerHTML = `
-      <div class="hidden-coords" style="display:none;">
-        <input type="hidden" value="${item.x1}" />
-        <input type="hidden" value="${item.y1}" />
-        <input type="hidden" value="${item.x2}" />
-        <input type="hidden" value="${item.y2}" />
-        <input type="hidden" value="${item.type}" />
-        <input type="hidden" value="${item.content}" />
-      </div>
-      <div class="masking-item-left">
-        <input class="aero-check" type="checkbox"
-          id="chk-${uid}" value="${item.content}" checked>
-        <label class="masking-item-label" for="chk-${uid}">${item.content}</label>
-      </div>
-      <div style="display:flex; gap:5px;">
-        <button class="btn-aero btn-aero-ghost btn-sm-aero"
-          onclick="renameItem(this)">이름변경</button>
-        <button class="btn-aero btn-aero-danger btn-sm-aero"
-          onclick="deleteItem(this)">삭제</button>
-      </div>
-    `;
-    list.insertBefore(li, container);
+    list.insertBefore(createMaskingItem(uid, item.x1, item.y1, item.x2, item.y2, item.type, item.content, true), container);
   });
 
-  // 감지 결과 카드 렌더링
   renderResults(results);
 }
 
-// 감지 결과 카드 렌더링 - 체크박스 없이 텍스트+뱃지만 표시
+//  마스킹 항목 li 생성
+function createMaskingItem(uid, x1, y1, x2, y2, type, content, checked) {
+  const li = document.createElement('li');
+  li.className = 'masking-item';
+  li.innerHTML = `
+    <div class="hidden-coords" style="display:none;">
+      <input type="hidden" value="${x1}" />
+      <input type="hidden" value="${y1}" />
+      <input type="hidden" value="${x2}" />
+      <input type="hidden" value="${y2}" />
+      <input type="hidden" value="${type}" />
+      <input type="hidden" value="${content}" />
+    </div>
+    <div class="masking-item-main">
+      <div class="masking-item-left">
+        <input class="aero-check" type="checkbox"
+          id="chk-${uid}" value="${content}" ${checked ? 'checked' : ''}>
+        <label class="masking-item-label" for="chk-${uid}">${content}</label>
+      </div>
+      <div style="display:flex; gap:5px;">
+        <button class="btn-aero btn-aero-ghost btn-sm-aero"
+          onclick="toggleEditItem(this)">수정</button>
+        <button class="btn-aero btn-aero-danger btn-sm-aero"
+          onclick="deleteItem(this)">삭제</button>
+      </div>
+    </div>
+    <div class="masking-item-edit" style="display:none;">
+      <div class="coord-grid">
+        <label>x1: <input class="aero-input coord-input" type="number" value="${x1}" data-coord="x1"></label>
+        <label>y1: <input class="aero-input coord-input" type="number" value="${y1}" data-coord="y1"></label>
+        <label>x2: <input class="aero-input coord-input" type="number" value="${x2}" data-coord="x2"></label>
+        <label>y2: <input class="aero-input coord-input" type="number" value="${y2}" data-coord="y2"></label>
+      </div>
+      <div class="coord-grid" style="margin-top:6px;">
+        <label style="display:flex;align-items:center;gap:5px;">
+          <input class="aero-radio" type="radio" name="type-${uid}" value="text" ${type !== 'face' ? 'checked' : ''}> 텍스트
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;">
+          <input class="aero-radio" type="radio" name="type-${uid}" value="face" ${type === 'face' ? 'checked' : ''}> 얼굴
+        </label>
+      </div>
+      <div style="margin-top:6px;">
+        <label style="font-size:12px;color:var(--sky-dark);">content:
+          <input class="aero-input" type="text" value="${content}" data-coord="content" style="margin-top:4px;width:100%;">
+        </label>
+      </div>
+    </div>
+  `;
+  return li;
+}
+
+// 수정 버튼 토글
+function toggleEditItem(btn) {
+  const li   = btn.closest('.masking-item');
+  const edit = li.querySelector('.masking-item-edit');
+  const hidden = li.querySelector('.hidden-coords');
+  const label  = li.querySelector('.masking-item-label');
+  const checkbox = li.querySelector('.aero-check');
+
+  const isOpen = edit.style.display !== 'none';
+
+  if (isOpen) {
+    // 저장: edit 필드 → hidden inputs 반영
+    const inputs = hidden.querySelectorAll('input');
+    inputs[0].value = li.querySelector('[data-coord="x1"]').value;
+    inputs[1].value = li.querySelector('[data-coord="y1"]').value;
+    inputs[2].value = li.querySelector('[data-coord="x2"]').value;
+    inputs[3].value = li.querySelector('[data-coord="y2"]').value;
+    const typeRadio = li.querySelector('.aero-radio:checked');
+    inputs[4].value = typeRadio ? typeRadio.value : 'text';
+    const newContent = li.querySelector('[data-coord="content"]').value.trim();
+    if (newContent) {
+      inputs[5].value = newContent;
+      label.textContent = newContent;
+      checkbox.value = newContent;
+    }
+    edit.style.display = 'none';
+    btn.textContent = '수정';
+  } else {
+    edit.style.display = 'block';
+    btn.textContent = '저장';
+  }
+}
+
+// 항목 삭제
+function deleteItem(btn) {
+  btn.closest('.masking-item').remove();
+  maskingImg();
+}
+
+// 감지 결과 렌더링 - 얼굴/텍스트 타입별 요약
 function renderResults(results) {
   const list  = document.getElementById('resultList');
   const empty = document.getElementById('resultEmpty');
@@ -137,78 +201,85 @@ function renderResults(results) {
     return;
   }
 
-  // content별 개수 집계
-  const countMap = {};
-  const typeMap  = {};
+  // type별 개수 집계
+  let faceCount = 0;
+  let textCount = 0;
   results.forEach(item => {
-    countMap[item.content] = (countMap[item.content] || 0) + 1;
-    typeMap[item.content]  = item.type;
+    if (item.type === 'face') faceCount++;
+    else textCount++;
   });
 
   list.innerHTML = '';
 
-  // content별로 한 행씩 렌더링 (체크박스 없음)
-  const rendered = new Set();
-  results.forEach((item, i) => {
-    if (rendered.has(item.content)) return;
-    rendered.add(item.content);
-
-    const n  = countMap[item.content];
+  if (faceCount > 0) {
     const li = document.createElement('li');
-    li.className    = 'result-item';
-    li.dataset.type = item.type;
-
+    li.className = 'result-item';
+    li.dataset.type = 'face';
     li.innerHTML = `
       <div class="result-item-left">
-        <span class="result-content-label">${item.content}</span>
+        <span class="result-content-label">얼굴</span>
       </div>
       <div style="display:flex; align-items:center; gap:8px;">
-        <span class="result-item-count">${n}개</span>
-        <span class="type-badge ${item.type}">
-          ${item.type === 'face' ? '얼굴' : '텍스트'}
-        </span>
+        <span class="result-item-count type-badge face">${faceCount}개</span>
       </div>
     `;
-
     list.appendChild(li);
-  });
+  }
+
+  if (textCount > 0) {
+    const li = document.createElement('li');
+    li.className = 'result-item';
+    li.dataset.type = 'text';
+    li.innerHTML = `
+      <div class="result-item-left">
+        <span class="result-content-label">텍스트</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="result-item-count type-badge text">${textCount}개</span>
+      </div>
+    `;
+    list.appendChild(li);
+  }
 
   empty.style.display = 'none';
   list.style.display  = 'flex';
 }
 
-// 항목 이름변경
-function renameItem(btn) {
-  const label = btn.closest('.masking-item').querySelector('.masking-item-label');
-  const name  = prompt('새 이름:', label.textContent.trim());
-  if (name && name.trim()) label.textContent = name.trim();
-}
+// 위치 직접 추가
+function addMaskPosition() {
+  const nameInput = document.getElementById('addWord');
+  const x1Input   = document.getElementById('addX1');
+  const y1Input   = document.getElementById('addY1');
+  const x2Input   = document.getElementById('addX2');
+  const y2Input   = document.getElementById('addY2');
+  const typeRadio = document.querySelector('input[name="addType"]:checked');
 
-// 항목 삭제
-function deleteItem(btn) {
-  btn.closest('.masking-item').remove();
-}
+  const name = nameInput.value.trim();
+  const x1   = x1Input.value.trim();
+  const y1   = y1Input.value.trim();
+  const x2   = x2Input.value.trim();
+  const y2   = y2Input.value.trim();
+  const type = typeRadio ? typeRadio.value : 'text';
 
-// 단어 직접 추가
-function addMaskWord() {
-  const input     = document.getElementById('addWord');
-  const word      = input.value.trim();
+  if (!name) { nameInput.focus(); return; }
+
   const list      = document.getElementById('maskingList');
   const container = document.getElementById('addWordContainer');
+  const uid       = Date.now();
 
-  if (!word) return;
+  list.insertBefore(createMaskingItem(uid, x1, y1, x2, y2, type, name, true), container);
 
-  const uid = Date.now();
-  const li  = document.createElement('li');
-  li.className = 'masking-item';
-  li.innerHTML = `<div class="hidden-coords" style="display:none;"> <input type="hidden" value="" /> <input type="hidden" value="" /> <input type="hidden" value="" /> <input type="hidden" value="" /> <input type="hidden" value="text" /> <input type="hidden" value="${word}" /> </div> <div class="masking-item-left"> <input class="aero-check" type="checkbox" id="chk-${uid}" value="${word}" checked> <label class="masking-item-label" for="chk-${uid}">${word}</label> </div> <div style="display:flex; gap:5px;"> <button class="btn-aero btn-aero-ghost btn-sm-aero" onclick="renameItem(this)">이름변경</button> <button class="btn-aero btn-aero-danger btn-sm-aero" onclick="deleteItem(this)">삭제</button> </div>`;
+  nameInput.value = '';
+  x1Input.value = '';
+  y1Input.value = '';
+  x2Input.value = '';
+  y2Input.value = '';
+  nameInput.focus();
 
-  list.insertBefore(li, container);
-  input.value = '';
-  input.focus();
+  maskingImg();
 }
 
-// Enter 키로 단어 추가
+// Enter 키로 추가
 document.getElementById('addWord').addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); addMaskWord(); }
+  if (e.key === 'Enter') { e.preventDefault(); addMaskPosition(); }
 });
