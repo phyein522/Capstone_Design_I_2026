@@ -173,6 +173,7 @@ function toggleEditItem(btn) {
     }
     edit.style.display = 'none';
     btn.textContent = '수정';
+    maskingImg();
   } else {
     edit.style.display = 'block';
     btn.textContent = '저장';
