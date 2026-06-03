@@ -1,0 +1,28 @@
+services:
+  python:
+    # build: ./python
+    image: "phyein522/server-python"
+    container_name: "python"
+    restart: "always"
+    ports:
+      - "8000"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    networks:
+      - mars_king_vnetwork
+  backend:
+    # build: ./backend
+    image: "phyein522/server-backend"
+    container_name: "backend"
+    restart: "always"
+    ports:
+      - "80:8080"
+    environment:
+      TZ: Asia/Seoul
+    networks:
+      - mars_king_vnetwork
+
+networks:
+  mars_king_vnetwork:
+    driver: bridge
