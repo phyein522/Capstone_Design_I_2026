@@ -8,13 +8,11 @@ spring:
           pythonClient: # @FeignClient name
             connectTimeout: 5000
             readTimeout: 30000
-mvc:
-  throw-exception-if-no-handler-found: true #ExceptionHandler에서 예외 탐색
-#web:
-#  resource:
-#    add-mappings: false
+  mvc:
+    throw-exception-if-no-handler-found: true #ExceptionHandler에서 예외 탐색
+
 server:
-  port: 8085
+  port: 8080
   servlet:
     encoding:
       charset: UTF-8

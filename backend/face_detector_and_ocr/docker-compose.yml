@@ -5,7 +5,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./python:/work
+      - ./python:/code
       - ./easyocr_models:/root/.EasyOCR
     environment:
       - PYTHONDONTWRITEBYTECODE=1

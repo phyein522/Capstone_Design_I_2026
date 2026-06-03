@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "pythonClient", url = "http://localhost:8000")
+@FeignClient(name = "pythonClient", url = "http://python:8000") //, url = "http://localhost:8000")
 public interface PythonClient {
     @PostMapping("/postimgpython")    // /api/postimg로 들어온 데이터를 /postimg로 python에 보냄
 	List<MaskingDto> postPython(@RequestBody ImgRequestDto imgRequestDto);

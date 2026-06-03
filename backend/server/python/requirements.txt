@@ -1,0 +1,12 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+torch==2.5.1+cpu
+torchvision==0.20.1+cpu
+
+fastapi
+uvicorn
+easyocr
+numpy<2
+opencv-python-headless==4.9.0.80
+ultralytics==8.2.0
+omegaconf
