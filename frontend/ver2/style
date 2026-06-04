@@ -1104,9 +1104,10 @@ footer {
     rgba(58,159,212,0.92) 0%,
     rgba(42,130,178,0.96) 100%
   );
+  scroll-snap-align:start;
   border-top: 1px solid rgba(255,255,255,0.3);
   backdrop-filter: blur(20px);
-  padding: 3rem 1.5rem 2rem;
+  padding: 1.5rem 1.5rem 1rem;
   position: relative;
   overflow: hidden;
   border-radius: 0 0 24px 24px;
@@ -1168,7 +1169,7 @@ footer::after {
   font-size: 13px;
   color: rgba(255,255,255,0.7);
   font-weight: 300;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
 }
 
 .footer-divider {
@@ -1233,7 +1234,7 @@ footer::after {
 }
 
 .footer-bottom {
-  margin-top: 2rem;
+  margin-top: 1rem;
   padding-top: 1.25rem;
   border-top: 1px solid rgba(255,255,255,0.12);
   display: flex;
@@ -1297,7 +1298,7 @@ footer::after {
 }
 
 .panel-scroll{
-  scroll-snap-type:y mandatory;
+  scroll-snap-type:y proximity;
 }
 
 section{
