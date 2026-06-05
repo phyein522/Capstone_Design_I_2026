@@ -79,8 +79,8 @@ function updateMaskingList(results) {
   const list      = document.getElementById('maskingList');
   const container = document.getElementById('addWordContainer');
 
-  // 기존 동적 항목 모두 제거
-  list.querySelectorAll('.masking-item').forEach(el => el.remove());
+  // 서버 결과 항목만 제거 (사용자가 직접 추가한 항목은 보존)
+  list.querySelectorAll('.masking-item[data-source="server"]').forEach(el => el.remove());
 
   const seen = new Set();
 
@@ -89,7 +89,9 @@ function updateMaskingList(results) {
     seen.add(item.content);
 
     const uid = `json-${Date.now()}-${i}`;
-    list.insertBefore(createMaskingItem(uid, item.x1, item.y1, item.x2, item.y2, item.type, item.content, true), container);
+    const li = createMaskingItem(uid, item.x1, item.y1, item.x2, item.y2, item.type, item.content, true);
+    li.dataset.source = 'server';  // 서버 항목 표시
+    list.insertBefore(li, container);
   });
 
   renderResults(results);
@@ -174,6 +176,8 @@ function toggleEditItem(btn) {
     edit.style.display = 'none';
     btn.textContent = '수정';
     maskingImg();
+    printImg();
+    updateCount();
   } else {
     edit.style.display = 'block';
     btn.textContent = '저장';
@@ -184,6 +188,8 @@ function toggleEditItem(btn) {
 function deleteItem(btn) {
   btn.closest('.masking-item').remove();
   maskingImg();
+  printImg();
+  updateCount();
 }
 
 // 감지 결과 렌더링 - 얼굴/텍스트 타입별 요약
@@ -268,7 +274,9 @@ function addMaskPosition() {
   const container = document.getElementById('addWordContainer');
   const uid       = Date.now();
 
-  list.insertBefore(createMaskingItem(uid, x1, y1, x2, y2, type, name, true), container);
+  const li = createMaskingItem(uid, x1, y1, x2, y2, type, name, true);
+  li.dataset.source = 'user';  // 사용자 추가 항목 표시
+  list.insertBefore(li, container);
 
   nameInput.value = '';
   x1Input.value = '';
@@ -278,9 +286,32 @@ function addMaskPosition() {
   nameInput.focus();
 
   maskingImg();
+  printImg();
+  updateCount();
 }
 
 // Enter 키로 추가
 document.getElementById('addWord').addEventListener('keydown', e => {
   if (e.key === 'Enter') { e.preventDefault(); addMaskPosition(); }
 });
+
+function updateCount() {
+  let maskingList = $("#maskingList").children();
+  let positionList = [];
+  maskingList.filter(".masking-item").each(function() {
+    const li = $(this);
+    const coords = li.find(".hidden-coords input");
+    const isChecked = li.find(".aero-check").is(":checked");
+    positionList.push({
+      x1: parseFloat(coords.eq(0).val()) || 0
+      , y1: parseFloat(coords.eq(1).val()) || 0
+      , x2: parseFloat(coords.eq(2).val()) || 0
+      , y2: parseFloat(coords.eq(3).val()) || 0
+      , type: coords.eq(4).val()
+      , content: coords.eq(5).val()
+      , isChecked: isChecked
+    });
+  });
+
+  renderResults(positionList);
+}
