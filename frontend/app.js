@@ -79,8 +79,8 @@ function updateMaskingList(results) {
   const list      = document.getElementById('maskingList');
   const container = document.getElementById('addWordContainer');
 
-  // 기존 동적 항목 모두 제거
-  list.querySelectorAll('.masking-item').forEach(el => el.remove());
+  // 서버 결과 항목만 제거 (사용자가 직접 추가한 항목은 보존)
+  list.querySelectorAll('.masking-item[data-source="server"]').forEach(el => el.remove());
 
   const seen = new Set();
 
@@ -89,7 +89,9 @@ function updateMaskingList(results) {
     seen.add(item.content);
 
     const uid = `json-${Date.now()}-${i}`;
-    list.insertBefore(createMaskingItem(uid, item.x1, item.y1, item.x2, item.y2, item.type, item.content, true), container);
+    const li = createMaskingItem(uid, item.x1, item.y1, item.x2, item.y2, item.type, item.content, true);
+    li.dataset.source = 'server';  // 서버 항목 표시
+    list.insertBefore(li, container);
   });
 
   renderResults(results);
@@ -266,7 +268,9 @@ function addMaskPosition() {
   const container = document.getElementById('addWordContainer');
   const uid       = Date.now();
 
-  list.insertBefore(createMaskingItem(uid, x1, y1, x2, y2, type, name, true), container);
+  const li = createMaskingItem(uid, x1, y1, x2, y2, type, name, true);
+  li.dataset.source = 'user';  // 사용자 추가 항목 표시
+  list.insertBefore(li, container);
 
   nameInput.value = '';
   x1Input.value = '';
